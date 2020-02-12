@@ -37,7 +37,10 @@ def uresnet_metrics(cfg, data_blob, res, logdir, iteration):
         for c1 in range(num_classes):
             for c2 in range(num_classes):
                 class_mask = label == c1
-                class_acc.append((predictions[class_mask] == c2).sum() / float(np.count_nonzero(class_mask)))
+                if np.count_nonzero(class_mask) > 0:
+                    class_acc.append((predictions[class_mask] == c2).sum() / float(np.count_nonzero(class_mask)))
+                else:
+                    class_acc.append(-1)
                 pix.append(np.count_nonzero((label == c1) & (predictions == c2)))
         fout.record(('idx', 'acc') + tuple(['confusion_%d_%d' % (c1, c2) for c1 in range(num_classes) for c2 in range(num_classes)]) + tuple(['num_pix_%d_%d' % (c1, c2) for c1 in range(num_classes) for c2 in range(num_classes)]),
                     (tree_idx, acc) + tuple(class_acc) + tuple(pix))
